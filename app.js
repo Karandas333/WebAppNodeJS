@@ -1,8 +1,22 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const path = require('path');
+const port = process.env.PORT;
+const mongoose = require('mongoose');
 
 const userModel = require('./models/user');
+
+mongoose.set('strictQuery', false);
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.DATABASE_URL);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (err) {
+    console.log(error);
+    process.exit(1);
+  }
+}
 
 app.set('view engine', 'ejs');
 app.use(express.json());
@@ -47,4 +61,8 @@ app.post('/create',async (req, res) => {
 });
 
 
-app.listen(3000);
+connectDB().then(() => {
+  app.listen(port, () => {
+    console.log(`Listening on port: ${port}`)
+  })
+})
